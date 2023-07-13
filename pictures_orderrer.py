@@ -12,7 +12,7 @@ def process_new_photos(path):
     normalize_extensions(path)
 
     matching_files = get_matching_re_date(path=path)
-    write_to_file(matching_files, '_Matching files.txt', mode='a')
+    write_to_file(matching_files, 'data/_Matching files.txt', mode='a')
     handle_files_known_date(matching_files)
 
     non_matching_files = find_abnormal_file_names(path=path)
@@ -35,9 +35,9 @@ def make_hardlink(target_file):
 
 def main():
     # create_md5s_file(mode='w')
-    # create_md5s_file(path=pictures_library, mode='w', file_name='pictures_library_md5.txt')
+    # create_md5s_file(path=pictures_library, mode='w', file_name='data/pictures_library_md5.txt')
     # get_duplicates('md5s.txt')
-    # find_synced_folders(root_path, 'pictures_library_md5.txt')
+    # find_synced_folders(root_path, 'data/pictures_library_md5.txt')
     # get_extensions()
     # print(cfo(r"C:\Users\Chananya\Desktop\pics vacation 2020\vids\20180118_001444A.mp4", "C:/a/20200812_121444A.mp4"))
     # write_to_file(find_abnormal_file_names(), 'non-match.txt')
