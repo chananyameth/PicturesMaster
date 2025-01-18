@@ -1,19 +1,19 @@
 import datetime
-import hashlib
-import glob
-import pathlib
+import logging
 import os
+import pathlib
 import re
-import shutil
-import sys
 import time
 from collections.abc import Iterable
-from os.path import join, getsize
+from os.path import join
 from pathlib import Path
-from PIL import Image
-from PIL.ExifTags import TAGS
 
-from consts import *
+from PIL import Image
+
+from src.file_utils.consts import *
+from src.file_utils.md5 import get_md5
+
+logger = logging.getLogger(__name__)
 
 
 def write_to_file(what, file_name, mode='w'):
@@ -26,7 +26,7 @@ def write_to_file(what, file_name, mode='w'):
             file.write(what)
 
 
-def walking(path=root_path):
+def walking(path=root_path, full_path=True):
     """walk through dir, get full path"""
     for root, dirs, files in os.walk(path):
         # size = sum(getsize(join(root, name)) for name in files)
@@ -35,40 +35,10 @@ def walking(path=root_path):
         # if 'CVS' in dirs:
         #    dirs.remove('CVS')  # don't visit CVS directories
         for file in files:
-            yield join(root, file)
-
-
-def get_md5(path):
-    """calculate md5 of a file"""
-    with open(path, 'rb') as file:
-        md5_hash = hashlib.md5()
-        content = file.read()
-        md5_hash.update(content)
-        digest = md5_hash.hexdigest()
-        return digest
-
-
-def create_photos_md5_file(path=root_path, mode='a', output_file_name='md5s.txt'):
-    with open(output_file_name, mode, encoding='utf8') as output:
-        for a_path in walking(path):
-            if pathlib.Path(a_path).suffix not in photos_extensions:
-                continue
-
-            output.write('{},{}\n'.format(get_md5(a_path), a_path))
-
-
-def get_duplicates(path):
-    """Search a file for duplicate lines, and return them"""
-    duplicates = []
-    exist = []
-    with open(path, 'r', encoding='utf8') as file:
-        lines = file.readlines()
-        for line in lines:
-            if line.split(',')[0] in exist:
-                duplicates.append(line)
+            if full_path:
+                yield join(root, file)
             else:
-                exist.append(line.split(',')[0])
-    return duplicates
+                yield file
 
 
 def get_all_extensions(root=pictures_library):
@@ -82,16 +52,16 @@ def get_all_extensions(root=pictures_library):
 def normalize_extensions(root=pictures_library):
     """Run over all files in root, and lower-case every extension"""
     for path in walking(root):
-        suff = pathlib.Path(path).suffix
-        if not suff.islower():
-            os.renames(path, path[:-len(suff)] + suff.lower())
+        suffix = pathlib.Path(path).suffix
+        if not suffix.islower():
+            os.renames(path, path[:-len(suffix)] + suffix.lower())
 
 
 def create_extensions_file():
     write_to_file(get_all_extensions(), 'extensions.txt')
 
 
-def find_synced_directorys(path_to_check, path_to_check_against_md5s):
+def find_synced_directories(path_to_check, path_to_check_against_md5s):
     exist_md5s = []
 
     with open(path_to_check_against_md5s, 'r', encoding='utf8') as file:

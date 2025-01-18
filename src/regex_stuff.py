@@ -2,7 +2,7 @@ import os
 import re
 from os.path import join
 
-from consts import *
+from src.file_utils.consts import *
 
 VALID_SUFFIX_RE = '(?:' + '|'.join(ext.strip('.').lower() for ext in photos_extensions + videos_extensions) + ')'
 IGNORED_SUFFIX_RE = '(?:' + '|'.join(ext.strip('.').lower() for ext in other_extensions) + ')'

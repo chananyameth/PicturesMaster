@@ -4,7 +4,7 @@ setup(
     name='pictures_master',
     version='0.1',
     install_requires=[
-        # 'pillow',
+        'pillow',
         'pyside6',
         'adb-shell[usb]',
     ],
