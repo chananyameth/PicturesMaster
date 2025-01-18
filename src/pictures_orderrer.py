@@ -1,9 +1,7 @@
-import os
-from os.path import join
+import sys
 
-from consts import *
-from regex_stuff import find_abnormal_file_names, get_matching_re_date
-from file_operations import *
+from src.file_operations import *
+from src.regex_stuff import find_abnormal_file_names, get_matching_re_date
 
 
 def process_new_photos(path):
